@@ -1,0 +1,10 @@
+#!/bin/sh
+
+SQL_DATA_SOURCE="$1"
+
+if [ -z "$SQL_DATA_SOURCE" ]; then
+  echo "usage: $0 SQL_DATA_SOURCE" >&2
+  exit 1
+fi
+
+ltc create -e "SQL_DATA_SOURCE=$1" atc vito/atc

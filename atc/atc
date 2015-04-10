@@ -1,0 +1,8 @@
+#!/bin/sh
+
+exec /usr/sbin/atc \
+  --templates /tmp/templates \
+  --public /tmp/public \
+  --sqlDataSource "$SQL_DATA_SOURCE" \
+  --callbacksURL "http://$CF_INSTANCE_IP:$CF_INSTANCE_PORT" \
+  --dev

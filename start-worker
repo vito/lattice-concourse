@@ -1,0 +1,16 @@
+#!/bin/sh
+
+ATC_API_URL="$1"
+
+if [ -z "$ATC_API_URL" ]; then
+  echo "usage: $0 ATC_API_URL" >&2
+  exit 1
+fi
+
+ltc create \
+  -r \
+  -m 0 \
+  -d 0 \
+  -e "ATC_API_URL=$ATC_API_URL" \
+  worker \
+  vito/garden-linux-worker

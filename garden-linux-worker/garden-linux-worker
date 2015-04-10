@@ -1,0 +1,54 @@
+#!/bin/sh
+
+set -e -x
+
+mkdir /tmp/depot
+mount -t tmpfs none /tmp/depot
+
+mkdir /tmp/graph
+mount -t tmpfs none /tmp/graph
+
+mkdir /tmp/overlays
+mount -t tmpfs none /tmp/overlays
+
+cat > /tmp/worker.json <<EOF
+{
+  "platform": "linux",
+  "addr": "${CF_INSTANCE_ADDR}",
+  "resource_types": [
+		{"type": "archive", "image": "docker:///concourse/archive-resource" },
+		{"type": "docker-image", "image": "docker:///concourse/docker-image-resource" },
+		{"type": "git", "image": "docker:///concourse/git-resource" },
+		{"type": "github-release", "image": "docker:///concourse/github-release-resource" },
+		{"type": "s3", "image": "docker:///concourse/s3-resource" },
+		{"type": "semver", "image": "docker:///concourse/semver-resource" },
+		{"type": "time", "image": "docker:///concourse/time-resource" },
+		{"type": "tracker", "image": "docker:///concourse/tracker-resource" }
+  ]
+}
+EOF
+
+cat /tmp/worker.json
+
+{
+  while true; do
+    curl -XPOST "$ATC_API_URL"/api/v1/workers?ttl=30s \
+      -H "Content-Type: application/json" \
+      -d @/tmp/worker.json || sleep 1
+
+    sleep 5
+  done
+} &
+
+/usr/sbin/garden-linux \
+  --graph /tmp/graph \
+  --depot /tmp/depot \
+  --overlays /tmp/overlays \
+  --rootfs bogus \
+  --bin /tmp/bin \
+  --allowHostAccess \
+  --containerGraceTime 5m \
+  --listenNetwork tcp \
+  --listenAddr 0.0.0.0:7777 \
+  --networkPool 10.244.0.0/22 \
+  --disableQuotas
