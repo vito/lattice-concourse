@@ -41,9 +41,6 @@ it.
 Both the ATC and the workers can be scaled up and down. though it doesn't
 really make sense to have any more than you have cells.
 
-Also keep in mind that the workers have no memory/disk limits, and may tend to
-monopolize their host cell.
-
 ## caveats
 
 * Concourse's build scheduling across workers is nowhere near as sophisticated
@@ -51,3 +48,9 @@ monopolize their host cell.
   builds are finite and don't have predetermined memory/disk limits.
 
 * Currently the workers are publicly routable. This is bad.
+
+* The PostgreSQL server must run externally. Once Diego does persistence/TCP
+  routing this will be easier.
+
+* The workers have no memory/disk limits, and may tend to monopolize their
+  host cell.
